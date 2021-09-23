@@ -1,6 +1,8 @@
 package uz.pdp.olxuz.ui.addproduct
 
 import android.Manifest
+import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,8 +19,14 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import com.squareup.picasso.Picasso
 import uz.pdp.olxuz.MainActivity
+import uz.pdp.olxuz.adapter.CategoryAdapter
+import uz.pdp.olxuz.adapter.CategoryDialogAdapter
+import uz.pdp.olxuz.databinding.DiaologProductTypeBinding
 import uz.pdp.olxuz.databinding.FragmentAddProductBinding
+import uz.pdp.olxuz.models.Category
+import uz.pdp.olxuz.utils.LoadData
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -39,6 +47,7 @@ class AddProductFragment : Fragment() {
     private lateinit var firestore: FirebaseStorage
     private lateinit var reference: StorageReference
     private var imgUrl: String = ""
+    private var categoryType = "all"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,15 +78,31 @@ class AddProductFragment : Fragment() {
                     }
                 }).check()
         }
+        binding.categoryType.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(binding.root.context).create()
+            val dialogBinding = DiaologProductTypeBinding.inflate(layoutInflater)
+            alertDialog.setView(dialogBinding.root)
+            val productTypeList = LoadData.loadCategory() as ArrayList<Category>
+            dialogBinding.close.setOnClickListener {
+                alertDialog.dismiss()
+            }
+            val categoryAdapter = CategoryDialogAdapter(productTypeList,
+                object : CategoryDialogAdapter.OnItemClickListener {
+                    override fun onItemClick(category: Category) {
+                        categoryType = category.type
+                        alertDialog.dismiss()
+                    }
+                })
+            dialogBinding.rvType.adapter = categoryAdapter
+            alertDialog.show()
+        }
         binding.saveAnnouncement.setOnClickListener {
-
         }
         return binding.root
     }
 
     private var getImageContent =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-
             val m = System.currentTimeMillis()
             val uploadTask = reference.child(m.toString()).putFile(uri)
             uploadTask.addOnSuccessListener {
@@ -85,6 +110,7 @@ class AddProductFragment : Fragment() {
                     val downloadUrl = it.metadata?.reference?.downloadUrl
                     downloadUrl?.addOnSuccessListener { imgUri ->
                         imgUrl = imgUri.toString()
+                        Picasso.get().load(imgUri).into(binding.imageProduct1)
                     }
                 }
             }.addOnFailureListener {
