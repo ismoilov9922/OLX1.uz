@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "33760541475",
+    "project_id": "olxuz-b29da",
+    "storage_bucket": "olxuz-b29da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33760541475:android:60e759655d40ff6fbdaa96",
+        "android_client_info": {
+          "package_name": "uz.pdp.olxuz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33760541475-vd6tt747gd8r5hgagocopjq1g2fqn2jt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoSNew7D5AwQ6hixpMD8U_bYWWfdykDXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33760541475-vd6tt747gd8r5hgagocopjq1g2fqn2jt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

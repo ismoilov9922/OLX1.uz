@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_home1"
+        android:title="E'lonlar" />
+    <item
+        android:id="@+id/saveFragment"
+        android:icon="@drawable/ic_like"
+        android:title="Saralangan" />
+    <item
+        android:id="@+id/addProductFragment"
+        android:icon="@drawable/ic_add_product"
+        android:title="E'lon berish" />
+    <item
+        android:id="@+id/smsFragment"
+        android:icon="@drawable/ic_comment"
+        android:title="Suhbatlar" />
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_profile"
+        android:title="Profile" />
+</menu>

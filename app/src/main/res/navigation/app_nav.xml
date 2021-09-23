@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_nav"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="uz.pdp.olxuz.ui.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="uz.pdp.olxuz.ui.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/saveFragment"
+        android:name="uz.pdp.olxuz.ui.save.SaveFragment"
+        android:label="fragment_save"
+        tools:layout="@layout/fragment_save" />
+    <fragment
+        android:id="@+id/addProductFragment"
+        android:name="uz.pdp.olxuz.ui.addproduct.AddProductFragment"
+        android:label="fragment_add_product"
+        tools:layout="@layout/fragment_add_product" />
+    <fragment
+        android:id="@+id/smsFragment"
+        android:name="uz.pdp.olxuz.ui.sms.SmsFragment"
+        android:label="fragment_sms"
+        tools:layout="@layout/fragment_sms" />
+    <fragment
+        android:id="@+id/save1Fragment"
+        android:name="uz.pdp.olxuz.ui.save.Save1Fragment"
+        android:label="fragment_save1"
+        tools:layout="@layout/fragment_save1" />
+    <fragment
+        android:id="@+id/save2Fragment"
+        android:name="uz.pdp.olxuz.ui.save.Save2Fragment"
+        android:label="fragment_save2"
+        tools:layout="@layout/fragment_save2" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="uz.pdp.olxuz.ui.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/productViewFragment"
+        android:name="uz.pdp.olxuz.ui.productview.ProductViewFragment"
+        android:label="fragment_product_view"
+        tools:layout="@layout/fragment_product_view" />
+</navigation>
