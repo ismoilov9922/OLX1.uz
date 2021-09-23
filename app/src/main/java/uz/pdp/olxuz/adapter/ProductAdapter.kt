@@ -20,7 +20,7 @@ class ProductAdapter(
     inner class Vh(private val binding: ItemProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(product: Product, position: Int) {
-
+            // my comment
             Picasso.get().load(product.image)
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.olx_logo)
