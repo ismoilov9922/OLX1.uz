@@ -138,7 +138,6 @@ class AddProductFragment : Fragment() {
             val simpleDataFormat = SimpleDateFormat("yyyy-MM-dd")
             val dateTime = simpleDataFormat.format(date).trim()
             val time = System.currentTimeMillis()
-            Log.d("AAA", "onCreateView: $productName")
             if (imgUrl.isNotEmpty() && productName.isNotEmpty() && description.isNotEmpty() && username.isNotEmpty() && email.isNotEmpty() && telnumber.isNotEmpty() && salary.isNotEmpty()) {
                 val product =
                     Product(time.toString(),

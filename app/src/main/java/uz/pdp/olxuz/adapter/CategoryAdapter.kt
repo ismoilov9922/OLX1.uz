@@ -8,7 +8,7 @@ import uz.pdp.olxuz.R
 import uz.pdp.olxuz.databinding.ItemCategoryBinding
 import uz.pdp.olxuz.models.Category
 
-class CategoryAdapter(private val list: List<Category>) :
+class CategoryAdapter(private val list: List<Category>, private val listener: OnClickListener) :
     RecyclerView.Adapter<CategoryAdapter.Vh>() {
     inner class Vh(private val binding: ItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -18,7 +18,9 @@ class CategoryAdapter(private val list: List<Category>) :
                 .error(R.drawable.olx_logo)
                 .into(binding.image)
             binding.type.text = category.name
-
+            binding.item.setOnClickListener {
+                listener.onItemClickListener(category)
+            }
         }
     }
 
@@ -31,4 +33,8 @@ class CategoryAdapter(private val list: List<Category>) :
     }
 
     override fun getItemCount(): Int = list.size
+
+    interface OnClickListener {
+        fun onItemClickListener(category: Category)
+    }
 }

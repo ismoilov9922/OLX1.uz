@@ -63,4 +63,29 @@ class LoadProduct(val context: Context) {
         }
         return productList
     }
+
+    fun loadProductAll(): MutableLiveData<Resource<List<Product>>> {
+        val productList = MutableLiveData<Resource<List<Product>>>()
+        var list = ArrayList<Product>()
+        if (NetworkHelper(context).isConnected()) {
+            productList.postValue(Resource.loading(null))
+            LoadData.loadCategory().forEach {
+                FirebaseFirestore.getInstance().collection(it.type).get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) {
+                            if (document != null) {
+                                val product = document.toObject(Product::class.java)
+                                list.add(product)
+                            }
+                        }
+                        productList.postValue(Resource.success(list))
+                    }.addOnFailureListener {
+                        productList.postValue(Resource.error("Error!!!", null))
+                    }
+            }
+        } else {
+            productList.postValue(Resource.error("Error!!!", null))
+        }
+        return productList
+    }
 }

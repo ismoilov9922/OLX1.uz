@@ -13,7 +13,7 @@ import com.google.firebase.auth.*
 import com.google.gson.Gson
 import uz.pdp.olxuz.MainActivity
 import uz.pdp.olxuz.databinding.ActivityRegisterBinding
-import uz.pdp.olxuz.sharPreference.YourPreference
+import uz.pdp.olxuz.sharedPreference.YourPreference
 import java.util.concurrent.TimeUnit
 
 

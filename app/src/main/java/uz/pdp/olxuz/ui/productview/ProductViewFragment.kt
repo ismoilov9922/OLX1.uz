@@ -74,6 +74,7 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         arguments?.let {
             id = it.getString("key") as String
+            type = it.getString("type") as String
         }
     }
 
@@ -108,7 +109,7 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
             this.childFragmentManager.findFragmentById(R.id.fallasMap) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        loadProduct(id).observe(viewLifecycleOwner, Observer
+        loadProduct(type, id).observe(viewLifecycleOwner, Observer
         {
             when (it.status) {
                 Status.LOADING -> {
@@ -270,17 +271,16 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
         mMap.uiSettings.isZoomControlsEnabled = true
     }
 
-    private fun loadProduct(type: String): LiveData<Resource<Product>> {
+    private fun loadProduct(type: String, id: String): LiveData<Resource<Product>> {
         val productData = MutableLiveData<Resource<Product>>()
         if (NetworkHelper(binding.root.context).isConnected()) {
             productData.postValue(Resource.loading(null))
             try {
-                FirebaseFirestore.getInstance().collection("all")
-                    .whereEqualTo("id", type).get()
+                FirebaseFirestore.getInstance().collection(type)
+                    .whereEqualTo("id", id).get()
                     .addOnSuccessListener { result ->
                         if (result != null) {
                             val product = result.toObjects(Product::class.java)
-                            Log.d(TAG, "loadProduct: ${product[0]}")
                             productData.postValue(Resource.success(product[0]))
                         }
                     }.addOnFailureListener {
@@ -292,45 +292,4 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
         }
         return productData
     }
-//    override fun onMarkerClick(p0: Marker?) = true
-//
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<String>,
-//        grantResults: IntArray,
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        when (requestCode) {
-//            MY_PERMISSION_FINE_LOCATION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {//permission to access location grant
-//                if (ActivityCompat.checkSelfPermission(requireContext(),
-//                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    mMap.isMyLocationEnabled = true
-//                }
-//            }
-//        }
-//    }
-
-//    private fun getDeviseLocation() {
-//        client = LocationServices.getFusedLocationProviderClient(binding.root.context)
-//        try {
-//            if (ActivityCompat.checkSelfPermission(requireActivity(),
-//                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-//                    requireActivity(),
-//                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-//            ) {
-//                return
-//            }
-//            val lastLocation = client.lastLocation
-//            lastLocation.addOnCompleteListener(requireActivity()) { task ->
-//                val result = task.result
-//                if (result != null) {
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(result.latitude,
-//                        result.longitude), 2.0f))
-//                }
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//    }
 }

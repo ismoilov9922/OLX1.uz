@@ -37,6 +37,7 @@ class SaveFragment : Fragment() {
                         override fun onItemClickListener(product: Product) {
                             val bundle = Bundle()
                             bundle.putString("key", product.id)
+                            bundle.putString("type", product.type)
                             findNavController().navigate(R.id.productViewFragment,
                                 bundle)
                         }

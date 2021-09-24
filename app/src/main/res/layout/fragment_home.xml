@@ -156,7 +156,7 @@
                     android:background="?attr/backgroundColor"
                     android:orientation="vertical"
                     android:paddingHorizontal="5dp"
-                    android:paddingBottom="30dp"
+                    android:paddingBottom="50dp"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:layout_constraintTop_toBottomOf="@id/category"
                     app:spanCount="2"

@@ -4,10 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.*
 import uz.pdp.olxuz.databinding.ActivityLoginBinding
-import uz.pdp.olxuz.register.register.RegisterActivity
-import uz.pdp.olxuz.sharPreference.YourPreference
 
 
 class LoginActivity : AppCompatActivity() {

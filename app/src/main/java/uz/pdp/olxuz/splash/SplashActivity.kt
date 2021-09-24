@@ -4,10 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import uz.pdp.olxuz.MainActivity
-import uz.pdp.olxuz.R
 import uz.pdp.olxuz.databinding.ActivitySpalshBinding
 import uz.pdp.olxuz.register.login.LoginActivity
-import uz.pdp.olxuz.sharPreference.YourPreference
+import uz.pdp.olxuz.sharedPreference.YourPreference
 import java.util.concurrent.Executors
 
 class SplashActivity : AppCompatActivity() {
@@ -20,7 +19,7 @@ class SplashActivity : AppCompatActivity() {
         yourPreference = YourPreference.getInstance(binding.root.context)
         Executors.newSingleThreadExecutor().execute {
             Thread.sleep(2000)
-            if (yourPreference.getData("phone").isEmpty()) {
+            if (yourPreference.getData("phone")!!.isEmpty()) {
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             } else {
