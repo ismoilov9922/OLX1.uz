@@ -132,21 +132,23 @@ class HomeFragment : Fragment() {
 
     private fun loadProduct(type: String): MutableLiveData<Resource<List<Product>>> {
         val productList = MutableLiveData<Resource<List<Product>>>()
+        list.clear()
         if (NetworkHelper(binding.root.context).isConnected()) {
             productList.postValue(Resource.loading(null))
-            firebaseFirestore.collection(type).get()
-                .addOnSuccessListener { result ->
-                    list.clear()
-                    for (document in result) {
-                        if (document != null) {
-                            val product = document.toObject(Product::class.java)
-                            list.add(product)
+            LoadData.loadCategory().forEach {
+                firebaseFirestore.collection(it.type).get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) {
+                            if (document != null) {
+                                val product = document.toObject(Product::class.java)
+                                list.add(product)
+                            }
                         }
+                        productList.postValue(Resource.success(list))
+                    }.addOnFailureListener {
+                        productList.postValue(Resource.error("Error!!!", null))
                     }
-                    productList.postValue(Resource.success(list))
-                }.addOnFailureListener {
-                    productList.postValue(Resource.error("Error!!!", null))
-                }
+            }
         } else {
             productList.postValue(Resource.error("Error!!!", null))
         }

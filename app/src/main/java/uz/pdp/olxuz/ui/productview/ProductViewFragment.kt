@@ -57,7 +57,7 @@ import uz.pdp.olxuz.utils.Status
 
 private const val ARG_PARAM1 = "product"
 
-class ProductViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class ProductViewFragment : Fragment(), OnMapReadyCallback {
     private var product: Product? = null
     lateinit var binding: FragmentProductViewBinding
     private val TAG = "AAA"
@@ -92,7 +92,6 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
             .withListener(object : PermissionListener {
                 override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                    getDeviseLocation()
                 }
 
                 override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
@@ -105,6 +104,10 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                     p1?.continuePermissionRequest()
                 }
             }).check()
+        val mapFragment =
+            this.childFragmentManager.findFragmentById(R.id.fallasMap) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
         loadProduct(id).observe(viewLifecycleOwner, Observer
         {
             when (it.status) {
@@ -137,10 +140,6 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                 }
             }
         })
-        val mapFragment =
-            this.childFragmentManager.findFragmentById(R.id.fallasMap) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-
         binding.backHome.setOnClickListener {
             findNavController().navigate(R.id.homeFragment)
         }
@@ -182,13 +181,19 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             when (it.status) {
                 Status.LOADING -> {
                     binding.rvProduct.visibility = View.INVISIBLE
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.nestedScroll.visibility = View.INVISIBLE
                 }
                 Status.ERROR -> {
                     binding.rvProduct.visibility = View.GONE
+                    binding.errorImage.visibility = View.VISIBLE
+                    binding.progressBar.visibility = View.GONE
                 }
                 Status.SUCCESS -> {
                     if (it.data != null) {
                         binding.rvProduct.visibility = View.VISIBLE
+                        binding.progressBar.visibility = View.GONE
+                        binding.errorImage.visibility = View.GONE
                         productAdapter =
                             ProductAdapter(requireContext(),
                                 it.data,
@@ -219,16 +224,13 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                         binding.rvProduct.adapter = productAdapter
                     } else {
                         binding.rvProduct.visibility = View.GONE
+                        binding.errorImage.visibility = View.VISIBLE
+                        binding.progressBar.visibility = View.GONE
                     }
                 }
             }
         })
         return binding.root
-    }
-
-    companion object {
-        var mapFragment: SupportMapFragment? = null
-        private const val MY_PERMISSION_FINE_LOCATION = 101
     }
 
     override fun onStart() {
@@ -290,46 +292,45 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         }
         return productData
     }
+//    override fun onMarkerClick(p0: Marker?) = true
+//
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<String>,
+//        grantResults: IntArray,
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        when (requestCode) {
+//            MY_PERMISSION_FINE_LOCATION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {//permission to access location grant
+//                if (ActivityCompat.checkSelfPermission(requireContext(),
+//                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+//                ) {
+//                    mMap.isMyLocationEnabled = true
+//                }
+//            }
+//        }
+//    }
 
-    override fun onMarkerClick(p0: Marker?) = false
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            MY_PERMISSION_FINE_LOCATION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {//permission to access location grant
-                if (ActivityCompat.checkSelfPermission(requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    mMap.isMyLocationEnabled = true
-                }
-            }
-        }
-    }
-
-    private fun getDeviseLocation() {
-        client = LocationServices.getFusedLocationProviderClient(binding.root.context)
-        try {
-            if (ActivityCompat.checkSelfPermission(requireActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    requireActivity(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
-            val lastLocation = client.lastLocation
-            lastLocation.addOnCompleteListener(requireActivity()) { task ->
-                val result = task.result
-                if (result != null) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(result.latitude,
-                        result.longitude), 2.0f))
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+//    private fun getDeviseLocation() {
+//        client = LocationServices.getFusedLocationProviderClient(binding.root.context)
+//        try {
+//            if (ActivityCompat.checkSelfPermission(requireActivity(),
+//                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                    requireActivity(),
+//                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+//            ) {
+//                return
+//            }
+//            val lastLocation = client.lastLocation
+//            lastLocation.addOnCompleteListener(requireActivity()) { task ->
+//                val result = task.result
+//                if (result != null) {
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(result.latitude,
+//                        result.longitude), 2.0f))
+//                }
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
 }
