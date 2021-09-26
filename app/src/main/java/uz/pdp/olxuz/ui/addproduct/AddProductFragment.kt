@@ -31,6 +31,7 @@ import uz.pdp.olxuz.databinding.DiaologProductTypeBinding
 import uz.pdp.olxuz.databinding.FragmentAddProductBinding
 import uz.pdp.olxuz.databinding.MapDialogBinding
 import uz.pdp.olxuz.models.Category
+import uz.pdp.olxuz.sharedPreference.YourPreference
 import uz.pdp.olxuz.utils.LoadData
 import java.text.SimpleDateFormat
 import java.util.*
@@ -157,8 +158,8 @@ class AddProductFragment : Fragment() {
                         time.toInt(),
                         "Toshkent",
                         dateTime)
-                firebaseFirestore.collection(categoryType)
-                    .add(product)
+                firebaseFirestore.collection(categoryType).document(product.id)
+                    .set(product)
                     .addOnSuccessListener {
                         Toast.makeText(binding.root.context, "Success", Toast.LENGTH_SHORT).show()
                         findNavController().popBackStack()
@@ -168,6 +169,7 @@ class AddProductFragment : Fragment() {
                             "I'm sorry do not success!!!",
                             Toast.LENGTH_SHORT).show()
                     }
+                firebaseFirestore.collection("myProduct").document(product.id).set(product)
             } else {
                 Toast.makeText(requireContext(),
                     "Malumotlar to'liq to'ldirilmagan!!!",

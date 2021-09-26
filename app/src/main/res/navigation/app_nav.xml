@@ -65,4 +65,9 @@
         android:name="uz.pdp.olxuz.ui.setting.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" />
+    <fragment
+        android:id="@+id/typeFragment"
+        android:name="uz.pdp.olxuz.ui.home.TypeFragment"
+        android:label="fragment_type"
+        tools:layout="@layout/fragment_type" />
 </navigation>

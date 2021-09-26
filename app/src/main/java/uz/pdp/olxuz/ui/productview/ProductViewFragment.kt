@@ -61,14 +61,14 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
     private var product: Product? = null
     lateinit var binding: FragmentProductViewBinding
     private val TAG = "AAA"
-    private var id: String = "7462562"
-    private var type: String = "all"
+    private var id: String = ""
+    private var type: String = ""
     private lateinit var mMap: GoogleMap
     private var latitude = 41.326298
     private var longitude = 69.228560
-    lateinit var client: FusedLocationProviderClient
     lateinit var productAdapter: ProductAdapter
     lateinit var appDatabase: AppDatabase
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,58 +89,43 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
         binding.nestedScroll.fullScroll(View.FOCUS_UP)
         binding.nestedScroll.scrollTo(0, 0)
         binding.appBar.setExpanded(true)
-        Dexter.withContext(binding.root.context)
-            .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            .withListener(object : PermissionListener {
-                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                }
-
-                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: PermissionRequest?,
-                    p1: PermissionToken?,
-                ) {
-                    p1?.continuePermissionRequest()
-                }
-            }).check()
+        LoadProduct(requireContext()).permissionLocation()
         val mapFragment =
             this.childFragmentManager.findFragmentById(R.id.fallasMap) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        loadProduct(type, id).observe(viewLifecycleOwner, Observer
-        {
-            when (it.status) {
-                Status.LOADING -> {
-                    binding.nestedScroll.visibility = View.INVISIBLE
-                    binding.progressBar.visibility = View.VISIBLE
+        LoadProduct(requireContext()).loadProductWhereId(type, id)
+            .observe(viewLifecycleOwner, Observer
+            {
+                when (it.status) {
+                    Status.LOADING -> {
+                        binding.nestedScroll.visibility = View.INVISIBLE
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    Status.SUCCESS -> {
+                        type = it.data?.type.toString()
+                        product = it.data
+                        binding.nestedScroll.visibility = View.VISIBLE
+                        binding.progressBar.visibility = View.GONE
+                        Picasso.get().load(it.data?.image).placeholder(R.drawable.placeholder)
+                            .error(R.drawable.placeholder)
+                            .into(binding.image)
+                        binding.date.text = it.data?.date
+                        binding.productName.text = it.data?.productName
+                        binding.productSalary.text = it.data?.salary
+                        binding.productAbout.text = it.data?.description
+                        latitude = it.data?.latitude?.toDouble() ?: 41.326298
+                        longitude = it.data?.longitude?.toDouble() ?: 69.228560
+                        binding.userName.text = it.data?.userName
+                        binding.locateName.text = it.data?.sity
+                        getLike()
+                    }
+                    Status.ERROR -> {
+                        binding.nestedScroll.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
+                        binding.errorImage.visibility = View.VISIBLE
+                    }
                 }
-                Status.SUCCESS -> {
-                    type = it.data?.type.toString()
-                    product = it.data
-                    binding.nestedScroll.visibility = View.VISIBLE
-                    binding.progressBar.visibility = View.GONE
-                    Picasso.get().load(it.data?.image).placeholder(R.drawable.placeholder)
-                        .error(R.drawable.placeholder)
-                        .into(binding.image)
-                    binding.date.text = it.data?.date
-                    binding.productName.text = it.data?.productName
-                    binding.productSalary.text = it.data?.salary
-                    binding.productAbout.text = it.data?.description
-                    latitude = it.data?.latitude?.toDouble() ?: 41.326298
-                    longitude = it.data?.longitude?.toDouble() ?: 69.228560
-                    binding.userName.text = it.data?.userName
-                    binding.locateName.text = it.data?.sity
-                    getLike()
-                }
-                Status.ERROR -> {
-                    binding.nestedScroll.visibility = View.GONE
-                    binding.progressBar.visibility = View.GONE
-                    binding.errorImage.visibility = View.VISIBLE
-                }
-            }
-        })
+            })
         binding.backHome.setOnClickListener {
             findNavController().navigate(R.id.homeFragment)
         }
@@ -176,7 +161,6 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
                 binding.like.setImageResource(R.drawable.ic_liked)
             }
         }
-
         LoadProduct(requireContext()).loadProduct(type).observe(viewLifecycleOwner, Observer
         {
             when (it.status) {
@@ -202,6 +186,8 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
                                     override fun onItemClickListener(product: Product) {
                                         val bundle = Bundle()
                                         bundle.putString("key", product.id)
+                                        bundle.putString("type", product.type)
+                                        findNavController().popBackStack()
                                         findNavController().navigate(R.id.productViewFragment,
                                             bundle)
                                     }
@@ -269,27 +255,5 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
         mMap.isMyLocationEnabled = true
         mMap.uiSettings.isMyLocationButtonEnabled = true
         mMap.uiSettings.isZoomControlsEnabled = true
-    }
-
-    private fun loadProduct(type: String, id: String): LiveData<Resource<Product>> {
-        val productData = MutableLiveData<Resource<Product>>()
-        if (NetworkHelper(binding.root.context).isConnected()) {
-            productData.postValue(Resource.loading(null))
-            try {
-                FirebaseFirestore.getInstance().collection(type)
-                    .whereEqualTo("id", id).get()
-                    .addOnSuccessListener { result ->
-                        if (result != null) {
-                            val product = result.toObjects(Product::class.java)
-                            productData.postValue(Resource.success(product[0]))
-                        }
-                    }.addOnFailureListener {
-
-                    }
-            } catch (e: Exception) {
-                productData.postValue(Resource.error("Error!!!", null))
-            }
-        }
-        return productData
     }
 }

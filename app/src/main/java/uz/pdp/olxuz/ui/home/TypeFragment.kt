@@ -1,77 +1,53 @@
 package uz.pdp.olxuz.ui.home
 
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.firestore.FirebaseFirestore
-import dagger.hilt.android.AndroidEntryPoint
+import uz.pdp.olxuz.MainActivity
 import uz.pdp.olxuz.R
-import uz.pdp.olxuz.adapter.CategoryAdapter
 import uz.pdp.olxuz.adapter.ProductAdapter
 import uz.pdp.olxuz.database.database.AppDatabase
 import uz.pdp.olxuz.database.entity.Product
-import uz.pdp.olxuz.databinding.FragmentHomeBinding
+import uz.pdp.olxuz.databinding.FragmentSearchViewBinding
+import uz.pdp.olxuz.databinding.FragmentTypeBinding
 import uz.pdp.olxuz.databinding.ItemProductBinding
-import uz.pdp.olxuz.models.Category
-import uz.pdp.olxuz.ui.productview.ProductViewFragment
-import uz.pdp.olxuz.utils.*
+import uz.pdp.olxuz.utils.LoadProduct
+import uz.pdp.olxuz.utils.Status
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-@AndroidEntryPoint
-class HomeFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
-    private val TAG = "AAA"
+class TypeFragment : Fragment() {
+    private var type = "all"
+    lateinit var binding: FragmentTypeBinding
+    lateinit var productAdapter: ProductAdapter
+    lateinit var appDatabase: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            type = it.getString("type") as String
         }
     }
-
-    private lateinit var binding: FragmentHomeBinding
-    lateinit var productAdapter: ProductAdapter
-    lateinit var list: ArrayList<Product>
-    lateinit var firebaseFirestore: FirebaseFirestore
-    lateinit var categoryList: ArrayList<Category>
-    lateinit var categoryAdapter: CategoryAdapter
-    lateinit var appDatabase: AppDatabase
-    private var type = "all"
-    private var isLike = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding = FragmentHomeBinding.inflate(layoutInflater)
+        binding = FragmentTypeBinding.inflate(layoutInflater)
+        appDatabase = AppDatabase.getDatabase(requireContext())
+        loadProduct(type)
         binding.searchHome.setOnClickListener {
             findNavController().popBackStack()
             findNavController().navigate(R.id.searchFragment)
         }
-        firebaseFirestore = FirebaseFirestore.getInstance()
-        appDatabase = AppDatabase.getDatabase(requireContext())
-        list = ArrayList()
-        categoryList = LoadData.loadCategory() as ArrayList<Category>
-        categoryAdapter = CategoryAdapter(categoryList, object : CategoryAdapter.OnClickListener {
-            override fun onItemClickListener(category: Category) {
-                val bundle = Bundle()
-                bundle.putString("type", category.type)
-                findNavController().navigate(R.id.typeFragment, bundle)
-            }
-        })
-        binding.rvCategory.adapter = categoryAdapter
-        LoadProduct(requireContext()).loadProductAll().observe(viewLifecycleOwner, Observer {
+        return binding.root
+    }
+
+    private fun loadProduct(type: String) {
+        LoadProduct(requireContext()).loadProduct(type).observe(viewLifecycleOwner, Observer {
             when (it.status) {
                 Status.LOADING -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -117,31 +93,30 @@ class HomeFragment : Fragment() {
                                     }
                                 })
                         binding.rvList.adapter = productAdapter
+
                     } else {
                         binding.progressBar.visibility = View.GONE
-                        binding.errorImage.visibility = View.VISIBLE
+                        binding.notProduct.visibility = View.VISIBLE
                         binding.rvList.visibility = View.INVISIBLE
                     }
                 }
             }
         })
-        binding.refresh.setOnRefreshListener {
-            findNavController().popBackStack()
-            findNavController().navigate(R.id.homeFragment)
-            Handler().postDelayed(Runnable {
-                binding.refresh.isRefreshing = false
-            }, 1500)
-        }
-        return binding.root
-    }
 
-    override fun onStop() {
-        super.onStop()
     }
 
     override fun onStart() {
         super.onStart()
+        (activity as MainActivity).hideBottomNawView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity).hideBottomNawView()
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        (activity as MainActivity).showBottomNawView()
+    }
 }
