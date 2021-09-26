@@ -55,4 +55,14 @@
         android:name="uz.pdp.olxuz.ui.search.SearchViewFragment"
         android:label="fragment_search_view"
         tools:layout="@layout/fragment_search_view" />
+    <fragment
+        android:id="@+id/myProductFragment"
+        android:name="uz.pdp.olxuz.ui.MyProductFragment"
+        android:label="fragment_my_product"
+        tools:layout="@layout/fragment_my_product" />
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="uz.pdp.olxuz.ui.setting.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" />
 </navigation>

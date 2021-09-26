@@ -14,8 +14,19 @@ class YourPreference private constructor(context: Context) {
         prefsEditor.commit()
     }
 
+    fun setTheme(value: Boolean) {
+        val prefsEditor = sharedPreferences.edit()
+        prefsEditor.putBoolean("theme", value)
+        prefsEditor.apply()
+        prefsEditor.commit()
+    }
+
     fun getData(key: String?): String? {
         return sharedPreferences.getString(key, "")
+    }
+
+    fun getTheme(): Boolean {
+        return sharedPreferences.getBoolean("theme", false)
     }
 
     fun clear() {
