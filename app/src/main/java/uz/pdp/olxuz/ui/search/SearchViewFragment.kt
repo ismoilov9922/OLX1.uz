@@ -17,6 +17,9 @@ import uz.pdp.olxuz.databinding.FragmentSearchViewBinding
 import uz.pdp.olxuz.databinding.ItemProductBinding
 import uz.pdp.olxuz.utils.LoadProduct
 import uz.pdp.olxuz.utils.Status
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class SearchViewFragment : Fragment() {
     private var searchText = "gallaxy"
@@ -71,6 +74,10 @@ class SearchViewFragment : Fragment() {
                                 list.add(it)
                             }
                         }
+                        Collections.sort(list,
+                            Comparator<Product> { o1, o2 ->
+                                o2.id.toLong().compareTo(o1.id.toLong())
+                            })
                         productAdapter =
                             ProductAdapter(requireContext(),
                                 list,

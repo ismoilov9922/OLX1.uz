@@ -47,13 +47,9 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        object : CountDownTimer(120000, 1000) {
+        object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                if (millisUntilFinished > 60000) {
-                    binding.time.text = "01:" + (millisUntilFinished-60000 / 1000).toString()
-                } else {
-                    binding.time.text = "00:" + (millisUntilFinished / 1000).toString()
-                }
+                binding.time.text = "00:" + (millisUntilFinished / 1000).toString()
             }
 
             override fun onFinish() {

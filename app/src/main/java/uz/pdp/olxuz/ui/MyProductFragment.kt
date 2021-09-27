@@ -16,6 +16,7 @@ import uz.pdp.olxuz.R
 import uz.pdp.olxuz.adapter.ProductEditAdapter
 import uz.pdp.olxuz.database.entity.Product
 import uz.pdp.olxuz.databinding.FragmentMyProductBinding
+import uz.pdp.olxuz.sharedPreference.YourPreference
 import uz.pdp.olxuz.utils.LoadProduct
 import uz.pdp.olxuz.utils.Status
 
@@ -25,12 +26,14 @@ class MyProductFragment : Fragment() {
     lateinit var myProductList: ArrayList<String>
     lateinit var firebaseFirestore: FirebaseFirestore
     lateinit var productEditAdapter: ProductEditAdapter
+    lateinit var yourPreference: YourPreference
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMyProductBinding.inflate(layoutInflater)
         myProductList = ArrayList()
+        yourPreference = YourPreference.getInstance(requireContext())
         firebaseFirestore = FirebaseFirestore.getInstance()
         LoadProduct(requireContext()).loadProduct("myProduct")
             .observe(viewLifecycleOwner, Observer {
@@ -47,11 +50,17 @@ class MyProductFragment : Fragment() {
                             Toast.LENGTH_SHORT).show()
                     }
                     Status.SUCCESS -> {
+                        val list = ArrayList<Product>()
                         if (it.data != null) {
+                            it.data.forEach { product ->
+                                if (product.number == yourPreference.getData("phone")) {
+                                    list.add(product)
+                                }
+                            }
                             binding.progress.visibility = View.GONE
                             binding.rv.visibility = View.VISIBLE
                             productEditAdapter =
-                                ProductEditAdapter(requireContext(), it.data, object :
+                                ProductEditAdapter(requireContext(), list, object :
                                     ProductEditAdapter.OnclickListener {
                                     override fun onItemEdit(product: Product) {
 
@@ -62,9 +71,8 @@ class MyProductFragment : Fragment() {
                                             .document(product.id).delete()
                                         firebaseFirestore.collection(product.type)
                                             .document(product.id).delete()
-                                        FirebaseStorage.getInstance().getReference(product.image)
-                                            .delete()
-                                        findNavController().popBackStack()
+//                                        FirebaseStorage.getInstance().getReference(product.image)
+//                                            .delete()
                                         findNavController().navigate(R.id.myProductFragment)
                                     }
                                 })

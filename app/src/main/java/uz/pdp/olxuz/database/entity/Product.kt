@@ -24,4 +24,10 @@ data class Product(
     val key: Int = 0,
     val sity: String = "Toshkent",
     val date: String = "72652642",
-) : Serializable
+) : Serializable, Comparable<Product> {
+    override fun compareTo(other: Product): Int {
+        if (id == "")
+            return 0
+        return other.id.toLong().compareTo(id.toLong())
+    }
+}

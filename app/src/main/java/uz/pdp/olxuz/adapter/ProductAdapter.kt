@@ -3,13 +3,15 @@ package uz.pdp.olxuz.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import uz.pdp.olxuz.R
 import uz.pdp.olxuz.database.database.AppDatabase
-import uz.pdp.olxuz.databinding.ItemProductBinding
 import uz.pdp.olxuz.database.entity.Product
+import uz.pdp.olxuz.databinding.ItemProductBinding
 
 class ProductAdapter(
     private val context: Context,

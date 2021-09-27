@@ -18,6 +18,8 @@ import uz.pdp.olxuz.databinding.FragmentTypeBinding
 import uz.pdp.olxuz.databinding.ItemProductBinding
 import uz.pdp.olxuz.utils.LoadProduct
 import uz.pdp.olxuz.utils.Status
+import java.util.*
+import kotlin.Comparator
 
 class TypeFragment : Fragment() {
     private var type = "all"
@@ -64,9 +66,14 @@ class TypeFragment : Fragment() {
                         binding.progressBar.visibility = View.GONE
                         binding.errorImage.visibility = View.GONE
                         binding.rvList.visibility = View.VISIBLE
+                        val productList = it.data
+                        Collections.sort(productList,
+                            Comparator<Product> { o1, o2 ->
+                                o2.id.toLong().compareTo(o1.id.toLong())
+                            })
                         productAdapter =
                             ProductAdapter(requireContext(),
-                                it.data,
+                                productList,
                                 object : ProductAdapter.OnclickListener {
                                     override fun onItemClickListener(product: Product) {
                                         val bundle = Bundle()
@@ -96,7 +103,7 @@ class TypeFragment : Fragment() {
 
                     } else {
                         binding.progressBar.visibility = View.GONE
-                        binding.notProduct.visibility = View.VISIBLE
+                        binding.errorImage.visibility = View.VISIBLE
                         binding.rvList.visibility = View.INVISIBLE
                     }
                 }

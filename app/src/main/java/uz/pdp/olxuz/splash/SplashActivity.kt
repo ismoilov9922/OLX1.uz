@@ -20,7 +20,7 @@ class SplashActivity : AppCompatActivity() {
         yourPreference = YourPreference.getInstance(binding.root.context)
         Executors.newSingleThreadExecutor().execute {
             Thread.sleep(2000)
-            if (yourPreference.getData("phone")!!.isEmpty()) {
+            if (yourPreference.getData("phone")!!.isNotEmpty()) {
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             } else {

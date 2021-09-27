@@ -31,7 +31,8 @@ class YourPreference private constructor(context: Context) {
 
     fun clear() {
         val editor = sharedPreferences.edit()
-        editor.clear()
+        editor.remove("phone")
+        editor.remove("username")
         editor.apply()
         editor.commit()
     }

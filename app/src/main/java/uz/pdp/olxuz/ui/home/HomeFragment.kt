@@ -2,12 +2,10 @@ package uz.pdp.olxuz.ui.home
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,26 +18,13 @@ import uz.pdp.olxuz.database.entity.Product
 import uz.pdp.olxuz.databinding.FragmentHomeBinding
 import uz.pdp.olxuz.databinding.ItemProductBinding
 import uz.pdp.olxuz.models.Category
-import uz.pdp.olxuz.ui.productview.ProductViewFragment
 import uz.pdp.olxuz.utils.*
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
-    private val TAG = "AAA"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
     private lateinit var binding: FragmentHomeBinding
     lateinit var productAdapter: ProductAdapter
     lateinit var list: ArrayList<Product>
@@ -47,8 +32,12 @@ class HomeFragment : Fragment() {
     lateinit var categoryList: ArrayList<Category>
     lateinit var categoryAdapter: CategoryAdapter
     lateinit var appDatabase: AppDatabase
-    private var type = "all"
-    private var isLike = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,7 +50,6 @@ class HomeFragment : Fragment() {
         }
         firebaseFirestore = FirebaseFirestore.getInstance()
         appDatabase = AppDatabase.getDatabase(requireContext())
-        list = ArrayList()
         categoryList = LoadData.loadCategory() as ArrayList<Category>
         categoryAdapter = CategoryAdapter(categoryList, object : CategoryAdapter.OnClickListener {
             override fun onItemClickListener(category: Category) {
@@ -71,6 +59,7 @@ class HomeFragment : Fragment() {
             }
         })
         binding.rvCategory.adapter = categoryAdapter
+        list = ArrayList()
         LoadProduct(requireContext()).loadProductAll().observe(viewLifecycleOwner, Observer {
             when (it.status) {
                 Status.LOADING -> {
@@ -85,6 +74,10 @@ class HomeFragment : Fragment() {
                 }
                 Status.SUCCESS -> {
                     if (it.data != null) {
+                        Collections.sort(it.data,
+                            Comparator<Product> { o1, o2 ->
+                                o2.id.toLong().compareTo(o1.id.toLong())
+                            })
                         binding.progressBar.visibility = View.GONE
                         binding.errorImage.visibility = View.GONE
                         binding.rvList.visibility = View.VISIBLE
@@ -99,7 +92,6 @@ class HomeFragment : Fragment() {
                                         findNavController().navigate(R.id.productViewFragment,
                                             bundle)
                                     }
-
                                     override fun likeOnClick(
                                         itemBinding: ItemProductBinding,
                                         product: Product,
@@ -109,7 +101,6 @@ class HomeFragment : Fragment() {
                                         ) {
                                             itemBinding.like.setImageResource(R.drawable.ic_like)
                                             appDatabase.productDao().deleteProduct(product)
-
                                         } else {
                                             appDatabase.productDao().insertProduct(product)
                                             itemBinding.like.setImageResource(R.drawable.ic_liked)
@@ -125,6 +116,7 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+
         binding.refresh.setOnRefreshListener {
             findNavController().popBackStack()
             findNavController().navigate(R.id.homeFragment)
@@ -134,14 +126,4 @@ class HomeFragment : Fragment() {
         }
         return binding.root
     }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onStart() {
-        super.onStart()
-    }
-
-
 }

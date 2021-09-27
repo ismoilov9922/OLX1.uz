@@ -17,9 +17,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import uz.pdp.olxuz.R
+import uz.pdp.olxuz.database.entity.Product
 import uz.pdp.olxuz.databinding.FragmentProfileBinding
+import uz.pdp.olxuz.sharedPreference.YourPreference
 import uz.pdp.olxuz.utils.LoadProduct
 import uz.pdp.olxuz.utils.Status
+import kotlin.system.exitProcess
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -27,6 +30,7 @@ private const val ARG_PARAM2 = "param2"
 class ProfileFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
+    lateinit var yourPreference: YourPreference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +48,19 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentProfileBinding.inflate(layoutInflater)
+        yourPreference = YourPreference.getInstance(requireContext())
         LoadProduct(requireContext()).loadProduct("myProduct")
             .observe(viewLifecycleOwner, Observer {
                 when (it.status) {
                     Status.SUCCESS -> {
                         if (it.data != null) {
-                            binding.myProductCount.text = it.data.size.toString()
+                            val list = ArrayList<Product>()
+                            it.data.forEach { product ->
+                                if (product.number == yourPreference.getData("phone")) {
+                                    list.add(product)
+                                }
+                            }
+                            binding.myProductCount.text = list.size.toString()
                         }
                     }
                 }
@@ -96,6 +107,11 @@ class ProfileFragment : Fragment() {
                 Uri.parse("https://help.olx.uz/hc/ru/sections/360002647937-%D0%9E-%D0%BA%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D0%B8-Kompaniya-haqida")
             val intent = Intent(Intent.ACTION_VIEW, url)
             startActivity(intent)
+        }
+        binding.exit.setOnClickListener {
+            yourPreference.clear()
+            activity?.finish()
+            exitProcess(0)
         }
 
         return binding.root
