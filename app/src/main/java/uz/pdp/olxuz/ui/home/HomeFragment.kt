@@ -33,12 +33,6 @@ class HomeFragment : Fragment() {
     lateinit var categoryAdapter: CategoryAdapter
     lateinit var appDatabase: AppDatabase
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,

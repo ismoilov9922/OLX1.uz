@@ -3,7 +3,6 @@ package uz.pdp.olxuz.splash
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatDelegate
 import uz.pdp.olxuz.MainActivity
 import uz.pdp.olxuz.databinding.ActivitySpalshBinding
 import uz.pdp.olxuz.register.login.LoginActivity

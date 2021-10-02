@@ -45,9 +45,11 @@ class MyProductFragment : Fragment() {
                     Status.ERROR -> {
                         binding.progress.visibility = View.GONE
                         binding.rv.visibility = View.INVISIBLE
-                        Toast.makeText(requireContext(),
+                        Toast.makeText(
+                            requireContext(),
                             "Sizda Hech qanday e'lon mavjud emas!",
-                            Toast.LENGTH_SHORT).show()
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     Status.SUCCESS -> {
                         val list = ArrayList<Product>()
@@ -73,6 +75,7 @@ class MyProductFragment : Fragment() {
                                             .document(product.id).delete()
 //                                        FirebaseStorage.getInstance().getReference(product.image)
 //                                            .delete()
+                                        findNavController().popBackStack()
                                         findNavController().navigate(R.id.myProductFragment)
                                     }
                                 })
