@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -54,8 +53,6 @@ import uz.pdp.olxuz.utils.LoadProduct
 import uz.pdp.olxuz.utils.NetworkHelper
 import uz.pdp.olxuz.utils.Resource
 import uz.pdp.olxuz.utils.Status
-import java.io.IOException
-import java.util.*
 
 
 private const val ARG_PARAM1 = "product"
@@ -164,33 +161,6 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
                 binding.like.setImageResource(R.drawable.ic_liked)
             }
         }
-        binding.mapContainer.setOnClickListener {
-            if (checkGrantResults(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    intArrayOf(1))
-            ) {
-                val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                if (latitude != 0.0 && longitude != 0.0) {
-                    try {
-                        val addresses =
-                            geocoder.getFromLocation(latitude, longitude, 1)
-                        val obj = addresses[0]
-                        var add = obj.countryName
-                        add = add + ", " + obj.subAdminArea
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                        Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(requireContext(),
-                        "Failed to detect location",
-                        Toast.LENGTH_SHORT)
-                        .show()
-                }
-            } else {
-                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION), 1)
-            }
-        }
         LoadProduct(requireContext()).loadProduct(type).observe(viewLifecycleOwner, Observer
         {
             when (it.status) {
@@ -258,26 +228,6 @@ class ProductViewFragment : Fragment(), OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         (activity as MainActivity).showBottomNawView()
-    }
-
-    fun checkGrantResults(
-        permissions: Array<String?>?,
-        grantResults: IntArray?,
-    ): Boolean {
-        var granted = 0
-        if (grantResults!!.size > 0) {
-            for (i in permissions!!.indices) {
-                val permission = permissions[i]
-                if (permission == Manifest.permission.ACCESS_FINE_LOCATION || permission == Manifest.permission.ACCESS_COARSE_LOCATION) {
-                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        granted++
-                    }
-                }
-            }
-        } else { // if cancelled
-            return false
-        }
-        return granted == 2
     }
 
     fun getLike() {
